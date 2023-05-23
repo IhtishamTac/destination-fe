@@ -15,6 +15,7 @@
                 />
                 <div class="card-body">
                   <h3 class="card-title">{{ des.nama }}</h3>
+                  <p class="card-text">{{ des.deskripsi }}</p>
                 </div>
               </div>
             </a>
