@@ -2,7 +2,7 @@
   <nav class="navbar navbar-expand-lg navbar-light">
     <div class="nav-link">
       <router-link
-        to="/home"
+        to="/"
         style="text-decoration: none; color: rgb(255, 255, 255)"
         >Home</router-link
       >
@@ -12,13 +12,15 @@
         href=""
         v-on:click.prevent="logout"
         style="text-decoration: none; color: rgb(255, 255, 255)"
+        v-if="this.user.role === 'admin'"
         >Logout</a
       >
     </div>
     <div class="nav-link">
       <router-link
-        to="/admin"
+        to="/login-admin"
         style="text-decoration: none; color: rgb(255, 255, 255)"
+        v-if="this.user.role === 'admin'"
         >Admin</router-link
       >
     </div>
@@ -37,7 +39,11 @@ export default {
   data() {
     return {
       token: localStorage.getItem("token"),
+      user: ''
     };
+  },
+  mounted() {
+    this.getUserDta();
   },
   methods: {
     async logout() {
@@ -55,7 +61,7 @@ export default {
         .post("auth/logout",{}, { headers })
         .then(() => {
           localStorage.removeItem("token");
-          this.$router.push("/");
+          this.$router.push("/login-admin");
         })
         .catch((err) => {
           this.$swal({
@@ -66,6 +72,15 @@ export default {
         }
       })
     },
+    getUserDta(){
+      const headers = {
+        Authorization: "Bearer " + this.token,
+      };
+      axios.get("auth/me", {headers}).then((res)=>{
+        this.user = res.data.user;
+        localStorage.setItem("user", res.data.user);
+      })
+    }
   },
 };
 </script>

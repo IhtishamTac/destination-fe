@@ -3,19 +3,15 @@
     <NavComponent></NavComponent>
 
     <div class="container mt-5">
+      <h1 class="text-center mb-5">Nusantara Destinations</h1>
       <div class="row">
         <div class="col-3" v-for="des in destinations" :key="des.id">
-          <router-link to="/detail" style="text-decoration: none; color: black">
+          <router-link to="/detail" @click.prevent="detailId(des.id)" style="text-decoration: none; color: black">
             <a href="" style="text-decoration: none; color: black">
               <div class="card">
-                <img
-                  :src="des.foto"
-                  alt=""
-                  class="card-image-top"
-                />
+                <img :src="des.foto" alt="" class="card-image-top" />
                 <div class="card-body">
                   <h3 class="card-title">{{ des.nama }}</h3>
-                  <p class="card-text">{{ des.deskripsi }}</p>
                 </div>
               </div>
             </a>
@@ -37,6 +33,7 @@ import NavComponent from "../components/NavComponent.vue";
 
 <script>
 import axios from "axios";
+import DetailView from "./DetailView.vue";
 
 export default {
   data() {
@@ -46,16 +43,12 @@ export default {
     };
   },
   mounted() {
-    this.fetchDestinations();
+    this.shDes();
   },
   methods: {
-    fetchDestinations() {
-      const headers = {
-        Authorization: "Bearer " + this.token,
-      };
-
+    shDes() {
       axios
-        .get("destination", { headers })
+        .get("destinations")
         .then((res) => {
           this.destinations = res.data.Destinations;
         })
@@ -66,6 +59,10 @@ export default {
           });
         });
     },
+    detailId(id){
+      localStorage.setItem("desDetailId", id);
+    },
+    
   },
 };
 </script>

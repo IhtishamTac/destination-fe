@@ -80,6 +80,10 @@ export default {
       axios
         .post("destination", data, config)
         .then(() => {
+          this.$swal({
+            icon: "success",
+            text: "Successfully added!",
+          });
           this.$router.push("/admin");
         })
         .catch((error) => {

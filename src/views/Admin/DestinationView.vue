@@ -24,8 +24,8 @@ import NavComponent from "../../components/NavComponent.vue";
           </tr>
         </thead>
         <tbody>
-          <tr v-for="des in destinations" :key="des.id">
-            <th scope="row">{{ des.id }}</th>
+          <tr v-for="(des, index) in destinations" :key="des.id">
+            <th scope="row">{{ index + 1 }}</th>
             <td>
               <div class="embed-responsive embed-responsive-16by9">
                 <img
@@ -37,29 +37,25 @@ import NavComponent from "../../components/NavComponent.vue";
               </div>
             </td>
             <td>{{ des.nama }}</td>
-            <td>Provinsi Sumatera Utara, Indonesia.</td>
+            <td>{{ des.alamat }}</td>
             <td>
-              <a
-                id="linkdes"
-                :href="des.link"
-                target="blank"
-                >Click Here!</a
-              >
+              <a id="linkdes" :href="des.link" target="blank">Click Here!</a>
             </td>
             <td>
-              {{des.deskripsi}}
+              {{ des.deskripsi }}
             </td>
-            <td class="ac" style="position: absolute">
+            <div class="ac" style="position: absolute; margin-top: 10px">
               <router-link
                 to="/edit"
                 style="text-decoration: none; color: white"
               >
-                <button class="btn btn-primary">Edit</button>
+                <button class="btn btn-primary" @click="editDes(des.id)">Edit</button>
               </router-link>
-              <button class="btn btn-danger">Delete</button>
-            </td>
+              <button class="btn btn-danger" @click="delDes(des.id)">
+                Delete
+              </button>
+            </div>
           </tr>
-          
         </tbody>
       </table>
     </div>
@@ -94,10 +90,10 @@ export default {
     };
   },
   mounted() {
-    this.fetchDestinations();
+    this.showDes();
   },
   methods: {
-    fetchDestinations() {
+    showDes() {
       const headers = {
         Authorization: "Bearer " + this.token,
       };
@@ -114,6 +110,39 @@ export default {
           });
         });
     },
+    async delDes(id) {
+      this.$swal({
+        icon: "warning",
+        title: "Are you sure want to Delete?",
+        showCancelButton: true,
+        confirmButtonText: "Delete",
+        confirmButtonColor: 'red'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const headers = {
+            Authorization: "Bearer " + this.token,
+          };
+          axios
+            .delete("destination/" + id, { headers })
+            .then((res) => {
+              this.destinations.splice(this.destinations.findIndex(des => des.id === id), 1);
+                this.$swal({
+                  icon: "success",
+                  text: res.data.message,
+                });
+            })
+            .catch((err) => {
+              this.$swal({
+                icon: "error",
+                text: err.response.data.message,
+              });
+            });
+        }
+      });
+    },
+    editDes(id){
+      localStorage.setItem("editDesId", id);
+    }
   },
 };
 </script>
